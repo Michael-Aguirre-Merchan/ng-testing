@@ -1047,6 +1047,12 @@ main h2 {
     
     }
 
+    .featured-card__cta {
+
+        font-size: 18px;
+
+    }
+
 }
 @media only screen and (max-width: 800px) {
 
@@ -1054,12 +1060,6 @@ main h2 {
 
         background: linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(166,166,166,1) 20vw);
     
-    }
-
-    .featured-card__cta {
-
-        font-size: 12px;
-
     }
 
 }
@@ -1072,6 +1072,12 @@ main h2 {
         flex-wrap: nowrap !important;
         overflow-x: scroll;
         width: 99vw;
+
+    }
+
+    .featured-card__cta {
+
+        font-size: 12px;
 
     }
 
