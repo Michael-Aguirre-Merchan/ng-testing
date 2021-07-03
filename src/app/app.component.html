@@ -142,30 +142,35 @@
               </div>
             </div>
             <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'false'">
-              <button disabled (click)="onSubmit(i)" id="{{ 'sub' + i }}" type="button" class="btn vote">Vote Now</button>
-              <button id="{{ 'down' + i }}" class="thumbs-down">
-                <img (click)="onNegative(i)" id="{{ 'down' + i }}" src="../assets/img/thumbs-down.svg">
+              <button disabled (click)="onSubmit(i)" id="{{ 'sub' + i }}" type="button" class="btn vote">Vote
+                Now</button>
+              <button (click)="onNegative(i)" id="{{ 'down' + i }}" class="no-p thumbs-down">
+                <img class="thumbs-img" src="../assets/img/thumbs-down.svg">
               </button>
-              <button (click)="onPositive(i)" id="{{ 'up' + i }}" class="thumbs-up">
-                <img src="../assets/img/thumbs-up.svg">
+              <button (click)="onPositive(i)" id="{{ 'up' + i }}" class="no-p thumbs-up">
+                <img class="thumbs-img" src="../assets/img/thumbs-up.svg">
               </button>
             </div>
             <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'true'">
               <div class="cards-category">Thank your for your vote!</div>
             </div>
             <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'true'">
-              <button (click)="undoVote(i)" id="{{ 'undo' + i]}" type="button" class="btn vote">Vote Again</button>
+              <button (click)="undoVote(i)" type="button" class="btn vote">Vote Again</button>
             </div>
             <div class="d-flex flex-row">
-              <div [ngStyle]="{'width.%': (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100}" class="blue-bar">
+              <div
+                [ngStyle]="{'width.%': (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100}"
+                class="blue-bar">
                 <img src="../assets/img/thumbs-up.svg">
                 <div class="blue-per">
-                  <div>{{ (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100 | number: '1.0-0' }}%</div>
+                  <div>{{ (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100 |
+                    number: '1.0-0' }}%</div>
                 </div>
               </div>
               <div class="orange-bar flex-fill">
                 <div class="d-flex justify-content-end">
-                  <div class="orange-per">{{ (final.results[i].negative / (final.results[i].positive + final.results[i].negative))*100 | number: '1.0-0' }}%</div>
+                  <div class="orange-per">{{ (final.results[i].negative / (final.results[i].positive +
+                    final.results[i].negative))*100 | number: '1.0-0' }}%</div>
                   <img src="../assets/img/thumbs-down.svg">
                 </div>
               </div>
@@ -193,6 +198,7 @@
             <p class="list-desc">{{data.description}}</p>
           </div>
           <div class="col-4 justify-content-end list-end">
+            <div *ngIf="final.voted[i] === 'false'">
             <div *ngIf="final.ago[i] == 1" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} day ago in
               {{data.category}}</div>
             <div *ngIf="final.ago[i] < 30" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} days ago in
@@ -206,31 +212,41 @@
             <div *ngIf="final.agoY[i] > 1" class="list-category d-flex flex-row-reverse">{{final.agoY[i]}} years ago in
               {{data.category}}</div>
             <div class="d-flex flex-row-reverse">
-              <button type="button" class="btn list-vote">Vote Now</button>
-              <div class="list-thumbs-down">
+              <button disabled (click)="onSubmit(i)" id="{{ 'sub' + i }}" type="button" class="btn list-vote">Vote Now</button>
+              <button (click)="onNegative(i)" id="{{ 'down' + i }}" type="button" class="no-p list-thumbs-down">
                 <img class="list-thumb" src="../assets/img/thumbs-down.svg">
-              </div>
-              <div class="list-thumbs-up">
+              </button>
+              <button (click)="onPositive(i)" id="{{ 'up' + i }}" class="no-p list-thumbs-up">
                 <img class="list-thumb" src="../assets/img/thumbs-up.svg">
-              </div>
+              </button>
             </div>
+            </div>
+            
+            <div *ngIf="final.voted[i] === 'true'" class="list-category d-flex flex-row-reverse">Thanks for your vote!</div>
+            <div *ngIf="final.voted[i] === 'true'" class="d-flex flex-row-reverse">
+              <button (click)="undoVote(i)" type="button" class="btn list-vote">Vote Again</button>
+          </div>
           </div>
         </div>
         <div class="d-flex flex-row list-bars">
-          <div [ngStyle]="{'width.%': final.results[i].positive}" class="blue-bar">
+          <div
+            [ngStyle]="{'width.%': (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100}"
+            class="blue-bar">
             <img src="../assets/img/thumbs-up.svg">
-            <div class="blue-per">{{final.results[i].positive}}%</div>
+            <div class="blue-per">{{ (final.results[i].positive / (final.results[i].positive +
+              final.results[i].negative))*100 | number: '1.0-0' }}%</div>
           </div>
           <div class="orange-bar flex-fill">
             <div class="d-flex justify-content-end">
-              <div class="orange-per">{{final.results[i].negative}}%</div>
+              <div class="orange-per">{{ (final.results[i].negative / (final.results[i].positive +
+                final.results[i].negative))*100 | number: '1.0-0' }}%</div>
               <img src="../assets/img/thumbs-down.svg">
             </div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!-- End: Implementation -->
   </main>
   <aside class="banner banner-bottom" role="doc-tip" aria-label="Submit a name">

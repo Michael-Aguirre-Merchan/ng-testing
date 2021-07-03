@@ -741,21 +741,37 @@ main h2 {
 
     padding: 7px;
     background-color: #FBBD4A;
-    width: 30px;
-    height: 30px;
+    height: fit-content;
+    width: fit-content;
     margin-bottom: 7px;
     margin-right: 5px;
+    border: 0;
+
+}
+
+.no-p {
+
+    padding: 0 !important;
 
 }
 
 .thumbs-up {
 
     padding: 7px;
-    width: 30px;
-    height: 30px;
+    height: fit-content;
+    width: fit-content;
     background-color: #3CBBB4CC;
     margin-bottom: 7px;
     margin-right: 5px;
+    border: 0;
+
+}
+
+.thumbs-img {
+
+    width: 15px;
+    height: auto;
+    margin: 7px;
 
 }
 
@@ -926,19 +942,20 @@ main h2 {
     background-color: #FBBD4A;
     width: 40px;
     height: 40px;
-    margin-bottom: 7px;
+    margin: auto 7px auto 0;
     margin-right: 5px;
+    border: 0;
 
 }
 
 .list-thumbs-up {
 
+    border: 0;
     padding: 8px;
     width: 40px;
     height: 40px;
     background-color: #3CBBB4CC;
-    margin-bottom: 7px;
-    margin-right: 5px;
+    margin: auto 5px auto 0;
 
 }
 
@@ -1041,8 +1058,14 @@ main h2 {
 
 .active {
 
-    border: 5px solid red;
+    border: 2px solid white;
 
+    .thumbs-img { 
+
+        margin: 5px;
+
+    }
+    
 }
 
 @media only screen and (max-width: 940px) {

@@ -49,8 +49,6 @@ export class AppComponent implements OnInit {
 
       hasVoted = localStorage.getItem('hasVoted'+index);
 
-      console.log(hasVoted);
-
       if (hasVoted == "positive") {
 
         results[index].positive = results[index].positive + 1
@@ -70,21 +68,12 @@ export class AppComponent implements OnInit {
         voted[index]= "false";
 
       }
-
-      console.log(results[index]);
       
       
     }
 
   return { results, ago, agoM, agoY, voted}
     
-  }
-
-  test(index: number) {
-
-    console.log(this.final.results[index]);
-    
-
   }
 
   final = this.ngOnInit()
@@ -131,7 +120,7 @@ export class AppComponent implements OnInit {
       sub.disabled = false;
 
     }
-    
+
   }
 
   onSubmit(index:number) {
@@ -143,16 +132,16 @@ export class AppComponent implements OnInit {
     if (up.classList.contains("active")){ 
 
       this.final.results[index].positive = this.final.results[index].positive + 1
+      localStorage.setItem('hasVoted'+index, 'positive');
 
     }
 
     else {
 
       this.final.results[index].negative = this.final.results[index].negative + 1 
+      localStorage.setItem('hasVoted'+index, 'negative');
 
     }
-
-    localStorage.setItem('hasVoted'+index, 'positive');
 
   }
 
