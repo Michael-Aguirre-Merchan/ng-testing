@@ -9,7 +9,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class AppComponent implements OnInit {
 
-  showing:boolean = false
+  showing: boolean = false
 
   data = data
 
@@ -25,143 +25,123 @@ export class AppComponent implements OnInit {
 
   }
 
-  votes = [];
+  localVotes = [];
 
   ngOnInit() {
 
     var ago = [];
     var agoM = [];
-    var agoY = []; 
+    var agoY = [];
     var results = [];
-    var voted = [];
-    var hasVoted: string;
-    
 
-    for (var index:number = 0; index < data.length; index++) {
-      
+
+    for (var index: number = 0; index < data.length; index++) {
+
       ago[index] = Math.round((new Date().getTime() - new Date(data[index].lastUpdated).getTime()) / (1000 * 86400));
 
       agoM[index] = Math.round((new Date().getTime() - new Date(data[index].lastUpdated).getTime()) / (1000 * 86400 * 30));
 
-      agoY[index] = Math.round((new Date().getTime() - new Date(data[index].lastUpdated).getTime()) / (1000 * 86400 * 30 * 12));      
+      agoY[index] = Math.round((new Date().getTime() - new Date(data[index].lastUpdated).getTime()) / (1000 * 86400 * 30 * 12));    
 
-      results[index]= {'positive': data[index].votes.positive, 'negative': data[index].votes.negative}
+      this.localVotes[index] = {'Spos': 0, 'Sneg': 0, 'hasVoted': "false"}
 
-      hasVoted = localStorage.getItem('hasVoted'+index);
-
-      if (hasVoted == "positive") {
-
-        results[index].positive = results[index].positive + 1
-
-        voted[index]="true"
+      if (JSON.parse(localStorage.getItem('storage')) != null) {
         
-      } else if (hasVoted == "negative") {
+        var storage = JSON.parse(localStorage.getItem('storage'));
 
-        results[index].negative = results[index].negative + 1
-
-        voted[index]="true"
-
-      }
-      
-      else {
+        this.localVotes[index].Spos = storage[index].Spos;
         
-        voted[index]= "false";
+        this.localVotes[index].Sneg = storage[index].Sneg;
 
+        if (storage[index].hasVoted === "true") {
+          
+          this.localVotes[index].hasVoted = "true";
+          
+        } 
       }
-      
-      
+
+      results[index] = { 'positive': data[index].votes.positive, 'negative': data[index].votes.negative }
+
+
     }
 
-  return { results, ago, agoM, agoY, voted}
-    
+    return { results, ago, agoM, agoY}
+
   }
 
   final = this.ngOnInit()
 
-  onPositive(index:number) {
+  onPositive(index: number) {
 
-    var up = document.getElementById("up"+index);
-    var down = document.getElementById("down"+index);
-    var sub = document.getElementById("sub"+index) as HTMLInputElement
+    var up = document.getElementById("up" + index);
+    var down = document.getElementById("down" + index);
+    var sub = document.getElementById("sub" + index) as HTMLInputElement
 
     up.classList.add("active")
 
-    if (down.classList.contains("active")){
+    if (down.classList.contains("active")) {
 
       down.classList.remove("active")
 
     }
 
     if (sub.disabled = true) {
-      
+
       sub.disabled = false;
 
     }
-    
+
 
   }
 
-  onNegative(index:number){
+  onNegative(index: number) {
 
-    var up = document.getElementById("up"+index);
-    var down = document.getElementById("down"+index);
-    var sub = document.getElementById("sub"+index) as HTMLInputElement
+    var up = document.getElementById("up" + index);
+    var down = document.getElementById("down" + index);
+    var sub = document.getElementById("sub" + index) as HTMLInputElement
 
     down.classList.add("active")
 
-    if (up.classList.contains("active")){
+    if (up.classList.contains("active")) {
 
       up.classList.remove("active")
 
     }
 
     if (sub.disabled = true) {
-      
+
       sub.disabled = false;
 
     }
 
   }
 
-  onSubmit(index:number) {
-    
-    this.final.voted[index] = "true";
+  onSubmit(index: number) {
 
-    var up = document.getElementById("up"+index);
+    var up = document.getElementById("up" + index);
 
-    if (up.classList.contains("active")){ 
+    if (up.classList.contains("active")) {
 
-      this.final.results[index].positive = this.final.results[index].positive + 1
-      localStorage.setItem('hasVoted'+index, 'positive');
+      this.localVotes[index].Spos = this.localVotes[index].Spos + 1
 
     }
-
     else {
 
-      this.final.results[index].negative = this.final.results[index].negative + 1 
-      localStorage.setItem('hasVoted'+index, 'negative');
+      this.localVotes[index].Sneg = this.localVotes[index].Sneg + 1
 
     }
+
+    this.localVotes[index].hasVoted = "true";
+
+    localStorage.setItem('storage', JSON.stringify(this.localVotes));
 
   }
 
-  undoVote(index:number) {
+  undoVote(index: number) {
 
-    this.final.voted[index] = "false";
+    this.localVotes[index].hasVoted = "false";
 
-    var hasVoted = localStorage.getItem('hasVoted' + index)
-
-    if (hasVoted == "positive") {
-
-      this.final.results[index].positive = this.final.results[index].positive - 1 
-      
-    } else {
-
-      this.final.results[index].negative = this.final.results[index].negative - 1 
-      
-    }
-
-    localStorage.removeItem('hasVoted' + index);
+    localStorage.setItem('storage', JSON.stringify(this.localVotes));
 
   }
 }

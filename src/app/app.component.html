@@ -129,7 +129,7 @@
             <div class="cards-desc">
               {{data.description}}
             </div>
-            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'false'">
+            <div class="d-flex flex-row-reverse" *ngIf="localVotes[i].hasVoted === 'false'">
               <div class="cards-category" *ngIf="final.ago[i] == 1">{{final.ago[i]}} day ago in {{data.category}}</div>
               <div class="cards-category" *ngIf="final.ago[i] < 30">{{final.ago[i]}} days ago in {{data.category}}</div>
               <div class="cards-category" *ngIf="final.agoM[i] == 1">{{final.agoM[i]}} month ago in {{data.category}}
@@ -141,7 +141,7 @@
               <div class="cards-category" *ngIf="final.agoY[i] > 1">{{final.agoY[i]}} years ago in {{data.category}}
               </div>
             </div>
-            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'false'">
+            <div class="d-flex flex-row-reverse" *ngIf="localVotes[i].hasVoted === 'false'">
               <button disabled (click)="onSubmit(i)" id="{{ 'sub' + i }}" type="button" class="btn vote">Vote
                 Now</button>
               <button (click)="onNegative(i)" id="{{ 'down' + i }}" class="no-p thumbs-down">
@@ -151,26 +151,29 @@
                 <img class="thumbs-img" src="../assets/img/thumbs-up.svg">
               </button>
             </div>
-            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'true'">
+            <div class="d-flex flex-row-reverse" *ngIf="localVotes[i].hasVoted === 'true'">
               <div class="cards-category">Thank your for your vote!</div>
             </div>
-            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'true'">
+            <div class="d-flex flex-row-reverse" *ngIf="localVotes[i].hasVoted === 'true'">
               <button (click)="undoVote(i)" type="button" class="btn vote">Vote Again</button>
             </div>
             <div class="d-flex flex-row">
               <div
-                [ngStyle]="{'width.%': (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100}"
+                [ngStyle]="{'width.%': ((final.results[i].positive + localVotes[i].Spos) / (final.results[i].positive + final.results[i].negative + localVotes[i].Spos + localVotes[i].Sneg))*100}"
                 class="blue-bar">
                 <img src="../assets/img/thumbs-up.svg">
                 <div class="blue-per">
-                  <div>{{ (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100 |
+                  <div>{{ ((final.results[i].positive + localVotes[i].Spos) / (final.results[i].positive +
+                    final.results[i].negative + localVotes[i].Spos + localVotes[i].Sneg))*100 |
                     number: '1.0-0' }}%</div>
                 </div>
               </div>
               <div class="orange-bar flex-fill">
                 <div class="d-flex justify-content-end">
-                  <div class="orange-per">{{ (final.results[i].negative / (final.results[i].positive +
-                    final.results[i].negative))*100 | number: '1.0-0' }}%</div>
+                  <div class="orange-per">{{ ((final.results[i].negative + localVotes[i].Sneg) /
+                    (final.results[i].positive +
+                    final.results[i].negative + localVotes[i].Spos + localVotes[i].Sneg))*100 | number: '1.0-0' }}%
+                  </div>
                   <img src="../assets/img/thumbs-down.svg">
                 </div>
               </div>
@@ -198,48 +201,52 @@
             <p class="list-desc">{{data.description}}</p>
           </div>
           <div class="col-4 justify-content-end list-end">
-            <div *ngIf="final.voted[i] === 'false'">
-            <div *ngIf="final.ago[i] == 1" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} day ago in
-              {{data.category}}</div>
-            <div *ngIf="final.ago[i] < 30" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} days ago in
-              {{data.category}}</div>
-            <div *ngIf="final.agoM[i] == 1" class="list-category d-flex flex-row-reverse">{{final.agoM[i]}} month ago in
-              {{data.category}}</div>
-            <div *ngIf="1 < final.agoM[i] && final.agoM[i] < 13" class="list-category d-flex flex-row-reverse">
-              {{final.agoM[i]}} months ago in {{data.category}}</div>
-            <div *ngIf="final.agoM[i] >= 12 && final.agoY[i] == 1" class="list-category d-flex flex-row-reverse">
-              {{final.agoY[i]}} year ago in {{data.category}}</div>
-            <div *ngIf="final.agoY[i] > 1" class="list-category d-flex flex-row-reverse">{{final.agoY[i]}} years ago in
-              {{data.category}}</div>
-            <div class="d-flex flex-row-reverse">
-              <button disabled (click)="onSubmit(i)" id="{{ 'sub' + i }}" type="button" class="btn list-vote">Vote Now</button>
-              <button (click)="onNegative(i)" id="{{ 'down' + i }}" type="button" class="no-p list-thumbs-down">
-                <img class="list-thumb" src="../assets/img/thumbs-down.svg">
-              </button>
-              <button (click)="onPositive(i)" id="{{ 'up' + i }}" class="no-p list-thumbs-up">
-                <img class="list-thumb" src="../assets/img/thumbs-up.svg">
-              </button>
+            <div *ngIf="localVotes[i].hasVoted === 'false'">
+              <div *ngIf="final.ago[i] == 1" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} day ago in
+                {{data.category}}</div>
+              <div *ngIf="final.ago[i] < 30" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} days ago in
+                {{data.category}}</div>
+              <div *ngIf="final.agoM[i] == 1" class="list-category d-flex flex-row-reverse">{{final.agoM[i]}} month ago
+                in
+                {{data.category}}</div>
+              <div *ngIf="1 < final.agoM[i] && final.agoM[i] < 13" class="list-category d-flex flex-row-reverse">
+                {{final.agoM[i]}} months ago in {{data.category}}</div>
+              <div *ngIf="final.agoM[i] >= 12 && final.agoY[i] == 1" class="list-category d-flex flex-row-reverse">
+                {{final.agoY[i]}} year ago in {{data.category}}</div>
+              <div *ngIf="final.agoY[i] > 1" class="list-category d-flex flex-row-reverse">{{final.agoY[i]}} years ago
+                in
+                {{data.category}}</div>
+              <div class="d-flex flex-row-reverse">
+                <button disabled (click)="onSubmit(i)" id="{{ 'sub' + i }}" type="button" class="btn list-vote">Vote
+                  Now</button>
+                <button (click)="onNegative(i)" id="{{ 'down' + i }}" type="button" class="no-p list-thumbs-down">
+                  <img class="list-thumb" src="../assets/img/thumbs-down.svg">
+                </button>
+                <button (click)="onPositive(i)" id="{{ 'up' + i }}" class="no-p list-thumbs-up">
+                  <img class="list-thumb" src="../assets/img/thumbs-up.svg">
+                </button>
+              </div>
             </div>
-            </div>
-            
-            <div *ngIf="final.voted[i] === 'true'" class="list-category d-flex flex-row-reverse">Thanks for your vote!</div>
-            <div *ngIf="final.voted[i] === 'true'" class="d-flex flex-row-reverse">
+
+            <div *ngIf="localVotes[i].hasVoted === 'true'" class="list-category d-flex flex-row-reverse">Thanks for your
+              vote!</div>
+            <div *ngIf="localVotes[i].hasVoted === 'true'" class="d-flex flex-row-reverse">
               <button (click)="undoVote(i)" type="button" class="btn list-vote">Vote Again</button>
-          </div>
+            </div>
           </div>
         </div>
         <div class="d-flex flex-row list-bars">
           <div
-            [ngStyle]="{'width.%': (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100}"
+            [ngStyle]="{'width.%': ((final.results[i].positive + localVotes[i].Spos) / (final.results[i].positive + final.results[i].negative+ localVotes[i].Spos + localVotes[i].Sneg))*100}"
             class="blue-bar">
             <img src="../assets/img/thumbs-up.svg">
-            <div class="blue-per">{{ (final.results[i].positive / (final.results[i].positive +
-              final.results[i].negative))*100 | number: '1.0-0' }}%</div>
+            <div class="blue-per">{{ ((final.results[i].positive + localVotes[i].Spos) / (final.results[i].positive +
+              final.results[i].negative + localVotes[i].Spos + localVotes[i].Sneg))*100 | number: '1.0-0' }}%</div>
           </div>
           <div class="orange-bar flex-fill">
             <div class="d-flex justify-content-end">
-              <div class="orange-per">{{ (final.results[i].negative / (final.results[i].positive +
-                final.results[i].negative))*100 | number: '1.0-0' }}%</div>
+              <div class="orange-per">{{ ((final.results[i].negative + localVotes[i].Sneg) / (final.results[i].positive +
+                final.results[i].negative + localVotes[i].Spos + localVotes[i].Sneg))*100 | number: '1.0-0' }}%</div>
               <img src="../assets/img/thumbs-down.svg">
             </div>
           </div>
