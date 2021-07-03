@@ -98,14 +98,14 @@
     <!-- Start: Implementation -->
     <div class="row align-items-center row-principal">
       <div class="col">
-        <h1 class="h1-title" >Previous Rulings</h1>
+        <h1 class="h1-title">Previous Rulings</h1>
       </div>
       <div class="res-drop col d-flex justify-content-end">
         <div ngbDropdown class="d-inline-block">
           <button *ngIf="!showing" class="btn drop" id="dropdownBasic1" ngbDropdownToggle>Grid</button>
           <button *ngIf="showing" class="btn drop" id="dropdownBasic1" ngbDropdownToggle>List</button>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="dropdown-menu dropdown-menu-right">
-            <button ngbDropdownItem class="no-hover drop-op" (click)="toogleG()" >Grid</button>
+            <button ngbDropdownItem class="no-hover drop-op" (click)="toogleG()">Grid</button>
             <button ngbDropdownItem class="no-hover" (click)="toogleL()">List</button>
           </div>
         </div>
@@ -129,93 +129,108 @@
             <div class="cards-desc">
               {{data.description}}
             </div>
-            <div class="d-flex flex-row-reverse">
-              <div class="cards-category" *ngIf="ago[i] == 1">{{ago[i]}} day ago in {{data.category}}</div>
-              <div class="cards-category" *ngIf="ago[i] < 30">{{ago[i]}} days ago in {{data.category}}</div>
-              <div class="cards-category" *ngIf="agoM[i] == 1">{{agoM[i]}} month ago in {{data.category}}</div>
-              <div class="cards-category" *ngIf="1 < agoM[i] && agoM[i] < 13">{{agoM[i]}} months ago in {{data.category}}</div>
-              <div class="cards-category" *ngIf="agoM[i] >= 12 && agoY[i] == 1">{{agoY[i]}} year ago in {{data.category}}</div>
-              <div class="cards-category" *ngIf="agoY[i] > 1">{{agoY[i]}} years ago in {{data.category}}</div>
-            </div>
-            <div class="d-flex flex-row-reverse">
-              <button type="button" class="btn vote">Vote Now</button>
-              <div class="thumbs-down">
-                <img src="../assets/img/thumbs-down.svg">
+            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'false'">
+              <div class="cards-category" *ngIf="final.ago[i] == 1">{{final.ago[i]}} day ago in {{data.category}}</div>
+              <div class="cards-category" *ngIf="final.ago[i] < 30">{{final.ago[i]}} days ago in {{data.category}}</div>
+              <div class="cards-category" *ngIf="final.agoM[i] == 1">{{final.agoM[i]}} month ago in {{data.category}}
               </div>
-              <div class="thumbs-up">
+              <div class="cards-category" *ngIf="1 < final.agoM[i] && final.agoM[i] < 13">{{final.agoM[i]}} months ago
+                in {{data.category}}</div>
+              <div class="cards-category" *ngIf="final.agoM[i] >= 12 && final.agoY[i] == 1">{{final.agoY[i]}} year ago
+                in {{data.category}}</div>
+              <div class="cards-category" *ngIf="final.agoY[i] > 1">{{final.agoY[i]}} years ago in {{data.category}}
+              </div>
+            </div>
+            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'false'">
+              <button disabled (click)="onSubmit(i)" id="{{ 'sub' + i }}" type="button" class="btn vote">Vote Now</button>
+              <button id="{{ 'down' + i }}" class="thumbs-down">
+                <img (click)="onNegative(i)" id="{{ 'down' + i }}" src="../assets/img/thumbs-down.svg">
+              </button>
+              <button (click)="onPositive(i)" id="{{ 'up' + i }}" class="thumbs-up">
                 <img src="../assets/img/thumbs-up.svg">
-              </div> 
+              </button>
+            </div>
+            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'true'">
+              <div class="cards-category">Thank your for your vote!</div>
+            </div>
+            <div class="d-flex flex-row-reverse" *ngIf="final.voted[i] === 'true'">
+              <button (click)="undoVote(i)" id="{{ 'undo' + i]}" type="button" class="btn vote">Vote Again</button>
             </div>
             <div class="d-flex flex-row">
-              <div [ngStyle]="{'width.%': results[i].positive}" class="blue-bar">
+              <div [ngStyle]="{'width.%': (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100}" class="blue-bar">
                 <img src="../assets/img/thumbs-up.svg">
                 <div class="blue-per">
-                  <div>{{results[i].positive}}%</div>
-                  </div>
+                  <div>{{ (final.results[i].positive / (final.results[i].positive + final.results[i].negative))*100 | number: '1.0-0' }}%</div>
+                </div>
               </div>
               <div class="orange-bar flex-fill">
                 <div class="d-flex justify-content-end">
-                  <div class="orange-per">{{results[i].negative}}%</div>
-                <img src="../assets/img/thumbs-down.svg">
+                  <div class="orange-per">{{ (final.results[i].negative / (final.results[i].positive + final.results[i].negative))*100 | number: '1.0-0' }}%</div>
+                  <img src="../assets/img/thumbs-down.svg">
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="showing">
+      <div class="list" *ngFor="let data of data; let i = index">
+        <img class="list-img" [src]='data.picture'>
+        <div class="black-back"></div>
+        <div class="list-content row">
+          <div class="col-2 list-thumbs">
+            <div class="list-thumbs-down" *ngIf="data.votes.positive < data.votes.negative">
+              <img class="list-thumb" src="../assets/img/thumbs-down.svg">
+            </div>
+            <div class="list-thumbs-up" *ngIf="data.votes.positive > data.votes.negative">
+              <img class="list-thumb" src="../assets/img/thumbs-up.svg">
+            </div>
+          </div>
+          <div class="list-title col-6">
+            <h1>{{data.name}}</h1>
+            <p class="list-desc">{{data.description}}</p>
+          </div>
+          <div class="col-4 justify-content-end list-end">
+            <div *ngIf="final.ago[i] == 1" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} day ago in
+              {{data.category}}</div>
+            <div *ngIf="final.ago[i] < 30" class="list-category d-flex flex-row-reverse">{{final.ago[i]}} days ago in
+              {{data.category}}</div>
+            <div *ngIf="final.agoM[i] == 1" class="list-category d-flex flex-row-reverse">{{final.agoM[i]}} month ago in
+              {{data.category}}</div>
+            <div *ngIf="1 < final.agoM[i] && final.agoM[i] < 13" class="list-category d-flex flex-row-reverse">
+              {{final.agoM[i]}} months ago in {{data.category}}</div>
+            <div *ngIf="final.agoM[i] >= 12 && final.agoY[i] == 1" class="list-category d-flex flex-row-reverse">
+              {{final.agoY[i]}} year ago in {{data.category}}</div>
+            <div *ngIf="final.agoY[i] > 1" class="list-category d-flex flex-row-reverse">{{final.agoY[i]}} years ago in
+              {{data.category}}</div>
+            <div class="d-flex flex-row-reverse">
+              <button type="button" class="btn list-vote">Vote Now</button>
+              <div class="list-thumbs-down">
+                <img class="list-thumb" src="../assets/img/thumbs-down.svg">
               </div>
+              <div class="list-thumbs-up">
+                <img class="list-thumb" src="../assets/img/thumbs-up.svg">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-row list-bars">
+          <div [ngStyle]="{'width.%': final.results[i].positive}" class="blue-bar">
+            <img src="../assets/img/thumbs-up.svg">
+            <div class="blue-per">{{final.results[i].positive}}%</div>
+          </div>
+          <div class="orange-bar flex-fill">
+            <div class="d-flex justify-content-end">
+              <div class="orange-per">{{final.results[i].negative}}%</div>
+              <img src="../assets/img/thumbs-down.svg">
             </div>
           </div>
         </div>
       </div>
     </div>
     
-    <div *ngIf="showing">
-    <div class="list" *ngFor="let data of data; let i = index">
-      <img class="list-img" [src]='data.picture'>
-      <div class="black-back"></div>
-      <div class="list-content row">
-        <div class="col-2 list-thumbs">
-        <div class="list-thumbs-down" *ngIf="data.votes.positive < data.votes.negative">
-          <img class="list-thumb" src="../assets/img/thumbs-down.svg">
-        </div>
-        <div class="list-thumbs-up" *ngIf="data.votes.positive > data.votes.negative">
-          <img class="list-thumb" src="../assets/img/thumbs-up.svg">
-        </div> 
-        </div>
-        <div class="list-title col-6">
-          <h1>{{data.name}}</h1>
-          <p class="list-desc" >{{data.description}}</p>
-        </div>
-        <div class="col-4 justify-content-end list-end">
-          <div *ngIf="ago[i] == 1" class="list-category d-flex flex-row-reverse">{{ago[i]}} day ago in {{data.category}}</div>
-          <div *ngIf="ago[i] < 30" class="list-category d-flex flex-row-reverse">{{ago[i]}} days ago in {{data.category}}</div>
-          <div *ngIf="agoM[i] == 1" class="list-category d-flex flex-row-reverse">{{agoM[i]}} month ago in {{data.category}}</div>
-          <div *ngIf="1 < agoM[i] && agoM[i] < 13" class="list-category d-flex flex-row-reverse">{{agoM[i]}} months ago in {{data.category}}</div>
-          <div *ngIf="agoM[i] >= 12 && agoY[i] == 1" class="list-category d-flex flex-row-reverse">{{agoY[i]}} year ago in {{data.category}}</div>
-          <div *ngIf="agoY[i] > 1" class="list-category d-flex flex-row-reverse">{{agoY[i]}} years ago in {{data.category}}</div>
-          <div class="d-flex flex-row-reverse">
-            <button type="button" class="btn list-vote">Vote Now</button>
-            <div class="list-thumbs-down">
-              <img class="list-thumb" src="../assets/img/thumbs-down.svg">
-            </div>
-            <div class="list-thumbs-up">
-              <img class="list-thumb" src="../assets/img/thumbs-up.svg">
-            </div> 
-          </div>
-        </div>
-    </div>
-    <div class="d-flex flex-row list-bars">
-      <div [ngStyle]="{'width.%': results[i].positive}" class="blue-bar">
-        <img src="../assets/img/thumbs-up.svg">
-        <div class="blue-per">{{results[i].positive}}%</div>
-      </div>
-      <div class="orange-bar flex-fill">
-        <div class="d-flex justify-content-end">
-          <div class="orange-per">{{results[i].negative}}%</div>
-        <img src="../assets/img/thumbs-down.svg">
-      </div>
-      </div>
-    </div>
-    </div>
-    </div>
-
-
     <!-- End: Implementation -->
   </main>
   <aside class="banner banner-bottom" role="doc-tip" aria-label="Submit a name">
@@ -247,7 +262,7 @@
       </ul>
     </div>
     <div class="footer__social">
-      <span class="social-title" >Follow us</span>
+      <span class="social-title">Follow us</span>
       <ul>
         <li>
           <a href="#">

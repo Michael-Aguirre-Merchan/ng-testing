@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { APP_BOOTSTRAP_LISTENER, Component, OnInit } from '@angular/core';
 import { data } from '../assets/data.js'
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -11,66 +12,6 @@ export class AppComponent implements OnInit {
   showing:boolean = false
 
   data = data
-
-  title = 'zemoga';
-
-  ago1 = Math.round((new Date().getTime() - new Date(data[0].lastUpdated).getTime()) / (1000 * 86400));
-  ago2 = Math.round((new Date().getTime() - new Date(data[1].lastUpdated).getTime()) / (1000 * 86400));
-  ago3 = Math.round((new Date().getTime() - new Date(data[2].lastUpdated).getTime()) / (1000 * 86400));
-  ago4 = Math.round((new Date().getTime() - new Date(data[3].lastUpdated).getTime()) / (1000 * 86400));
-  ago5 = Math.round((new Date().getTime() - new Date(data[4].lastUpdated).getTime()) / (1000 * 86400));
-  ago6 = Math.round((new Date().getTime() - new Date(data[5].lastUpdated).getTime()) / (1000 * 86400));
-
-  ago = [ this.ago1, this.ago2, this.ago3, this.ago4, this.ago5, this.ago6 ]
-
-  agoM = [ Math.round(this.ago1 / 30), 
-    Math.round(this.ago2 / 30), 
-    Math.round(this.ago3 / 30), 
-    Math.round(this.ago4 / 30), 
-    Math.round(this.ago5 / 30), 
-    Math.round(this.ago6 / 30)
-    ]
-
-  agoY = [ Math.round(this.ago1 / (30 * 12)), 
-    Math.round(this.ago2 / (30 * 12)), 
-    Math.round(this.ago3 / (30 * 12)), 
-    Math.round(this.ago4 / (30 * 12)), 
-    Math.round(this.ago5 / (30 * 12)), 
-    Math.round(this.ago6 / (30 * 12))
-  ]
-  total1:number =  data[0].votes.positive + data[0].votes.negative
-  positive1 = data[0].votes.positive/this.total1 * 100
-  negative1:number= data[0].votes.negative/this.total1 * 100
-  
-  total2 =  data[1].votes.positive + data[1].votes.negative
-  positive2 = data[1].votes.positive/this.total2 * 100
-  negative2= data[1].votes.negative/this.total2 * 100
-  
-  total3 =  data[2].votes.positive + data[2].votes.negative
-  positive3 = data[2].votes.positive/this.total3 * 100
-  negative3= data[2].votes.negative/this.total3 * 100
-
-  total4 =  data[3].votes.positive + data[3].votes.negative
-  positive4 = data[3].votes.positive/this.total4 * 100 
-  negative4= data[3].votes.negative/this.total4 * 100 
-
-  total5 =  data[4].votes.positive + data[4].votes.negative
-  positive5 = data[4].votes.positive/this.total5 * 100
-  negative5= data[4].votes.negative/this.total5 * 100
-
-  total6 =  data[5].votes.positive + data[5].votes.negative
-  positive6 = data[5].votes.positive/this.total6 * 100 
-  negative6= data[5].votes.negative/this.total6 * 100
-
-
-  results = [
-    {"positive": Math.round(this.positive1), "negative": Math.round(this.negative1)},
-    {"positive": Math.round(this.positive2), "negative": Math.round(this.negative2)},
-    {"positive": Math.round(this.positive3), "negative": Math.round(this.negative3)},
-    {"positive": Math.round(this.positive4), "negative": Math.round(this.negative4)},
-    {"positive": Math.round(this.positive5), "negative": Math.round(this.negative5)},
-    {"positive": Math.round(this.positive6), "negative": Math.round(this.negative6)}
-  ]
 
   toogleG() {
 
@@ -84,7 +25,154 @@ export class AppComponent implements OnInit {
 
   }
 
+  votes = [];
+
   ngOnInit() {
+
+    var ago = [];
+    var agoM = [];
+    var agoY = []; 
+    var results = [];
+    var voted = [];
+    var hasVoted: string;
     
+
+    for (var index:number = 0; index < data.length; index++) {
+      
+      ago[index] = Math.round((new Date().getTime() - new Date(data[index].lastUpdated).getTime()) / (1000 * 86400));
+
+      agoM[index] = Math.round((new Date().getTime() - new Date(data[index].lastUpdated).getTime()) / (1000 * 86400 * 30));
+
+      agoY[index] = Math.round((new Date().getTime() - new Date(data[index].lastUpdated).getTime()) / (1000 * 86400 * 30 * 12));      
+
+      results[index]= {'positive': data[index].votes.positive, 'negative': data[index].votes.negative}
+
+      hasVoted = localStorage.getItem('hasVoted'+index);
+
+      console.log(hasVoted);
+
+      if (hasVoted == "positive") {
+
+        results[index].positive = results[index].positive + 1
+
+        voted[index]="true"
+        
+      } else if (hasVoted == "negative") {
+
+        results[index].negative = results[index].negative + 1
+
+        voted[index]="true"
+
+      }
+      
+      else {
+        
+        voted[index]= "false";
+
+      }
+
+      console.log(results[index]);
+      
+      
+    }
+
+  return { results, ago, agoM, agoY, voted}
+    
+  }
+
+  test(index: number) {
+
+    console.log(this.final.results[index]);
+    
+
+  }
+
+  final = this.ngOnInit()
+
+  onPositive(index:number) {
+
+    var up = document.getElementById("up"+index);
+    var down = document.getElementById("down"+index);
+    var sub = document.getElementById("sub"+index) as HTMLInputElement
+
+    up.classList.add("active")
+
+    if (down.classList.contains("active")){
+
+      down.classList.remove("active")
+
+    }
+
+    if (sub.disabled = true) {
+      
+      sub.disabled = false;
+
+    }
+    
+
+  }
+
+  onNegative(index:number){
+
+    var up = document.getElementById("up"+index);
+    var down = document.getElementById("down"+index);
+    var sub = document.getElementById("sub"+index) as HTMLInputElement
+
+    down.classList.add("active")
+
+    if (up.classList.contains("active")){
+
+      up.classList.remove("active")
+
+    }
+
+    if (sub.disabled = true) {
+      
+      sub.disabled = false;
+
+    }
+    
+  }
+
+  onSubmit(index:number) {
+    
+    this.final.voted[index] = "true";
+
+    var up = document.getElementById("up"+index);
+
+    if (up.classList.contains("active")){ 
+
+      this.final.results[index].positive = this.final.results[index].positive + 1
+
+    }
+
+    else {
+
+      this.final.results[index].negative = this.final.results[index].negative + 1 
+
+    }
+
+    localStorage.setItem('hasVoted'+index, 'positive');
+
+  }
+
+  undoVote(index:number) {
+
+    this.final.voted[index] = "false";
+
+    var hasVoted = localStorage.getItem('hasVoted' + index)
+
+    if (hasVoted == "positive") {
+
+      this.final.results[index].positive = this.final.results[index].positive - 1 
+      
+    } else {
+
+      this.final.results[index].negative = this.final.results[index].negative - 1 
+      
+    }
+
+    localStorage.removeItem('hasVoted' + index);
+
   }
 }
